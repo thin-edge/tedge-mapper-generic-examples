@@ -47,3 +47,14 @@ jobs:
       - name: Run tests
         run: npm test
         working-directory: ${{ matrix.project }}
+
+      - name: Check formatting
+        run: |
+          # The `npm pkg get` command exits with 1 if the script is not found.
+          if [ "$(npm pkg get scripts.format:check)" != "{}" ]; then
+            echo "::notice title=Formatting Check::'format:check' script found in ${{ matrix.project }}. Running it."
+            npm run format:check
+          else
+            echo "::notice title=Formatting Check::'format:check' script not found in ${{ matrix.project }}. Skipping."
+          fi
+        working-directory: ${{ matrix.project }}
