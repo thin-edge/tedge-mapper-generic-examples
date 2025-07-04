@@ -1,0 +1,49 @@
+name: Test Node.js Projects
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  discover-projects:
+    runs-on: ubuntu-latest
+    outputs:
+      projects: ${{ steps.find-projects.outputs.projects }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: find-projects
+        name: Find Node.js projects
+        run: |
+          # Find all directories under `pipelines` that contain a package.json,
+          # then format the list as a JSON array for the matrix strategy.
+          PROJECTS=$(find pipelines -name package.json -exec dirname {} \; | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
+
+  test:
+    needs: discover-projects
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.discover-projects.outputs.projects) }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+          cache-dependency-path: "${{ matrix.project }}/package-lock.json"
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ${{ matrix.project }}
+
+      - name: Run tests
+        run: npm test
+        working-directory: ${{ matrix.project }}
