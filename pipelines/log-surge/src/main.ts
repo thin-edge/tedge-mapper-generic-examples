@@ -10,10 +10,10 @@ import * as testing from "../../common/testing";
 export interface Config {
   // Enable debug logging
   debug?: boolean;
-  withLogs?: boolean;
+  with_logs?: boolean;
   publish_statistics?: boolean;
   stats_topic?: string;
-  textFilter?: string[];
+  text_filter?: string[];
   threshold?: {
     info?: number;
     warning?: number;
@@ -48,7 +48,7 @@ export function get_state(): FlowState {
 export function process(
   timestamp: Timestamp,
   message: Message,
-  { withLogs = false, debug = false, textFilter = [] }: Config = {},
+  { with_logs = false, debug = false, text_filter = [] }: Config = {},
 ) {
   TEST: if (debug) {
     console.log("Calling process");
@@ -66,7 +66,7 @@ export function process(
       return element.test(text);
     };
   };
-  if (!textFilter.map((v) => RegExp(v)).every(contains(output.text))) {
+  if (!text_filter.map((v) => RegExp(v)).every(contains(output.text))) {
     TEST: if (debug) {
       console.log("Skipping message", {});
     }
@@ -77,7 +77,7 @@ export function process(
   state.stats[output.level] += 1;
   state.stats.total += 1;
 
-  if (withLogs) {
+  if (with_logs) {
     return [
       {
         topic: "stream/logs/journald",
@@ -169,7 +169,7 @@ TEST: testing.run(1, "test", () => {
     payload: JSON.stringify(value),
   }));
   const config: Config = {
-    withLogs: true,
+    with_logs: true,
     publish_statistics: true,
     debug: false,
     threshold: {

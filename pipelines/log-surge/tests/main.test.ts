@@ -8,7 +8,7 @@ beforeEach(() => {
   flow.get_state().ran = false;
 });
 
-test("Config withLogs returns the log entries", () => {
+test("Config with_logs returns the log entries", () => {
   const message: tedge.Message = {
     topic: "dummy",
     payload: JSON.stringify(<journald.JOURNALD_RAW_MESSAGE>{
@@ -17,12 +17,12 @@ test("Config withLogs returns the log entries", () => {
     }),
   };
   const output1 = flow.process(tedge.mockGetTime(), message, <flow.Config>{
-    withLogs: true,
+    with_logs: true,
   });
   expect(output1).toHaveLength(1);
 
   const output2 = flow.process(tedge.mockGetTime(), message, <flow.Config>{
-    withLogs: false,
+    with_logs: false,
   });
   expect(output2).toHaveLength(0);
 });
@@ -32,8 +32,8 @@ describe.each([
   ["Some log message", [".*(important).*"], 0],
   ["Some log message", [], 1],
 ])(
-  "textFilter can be used to filter log messages",
-  (text: string, textFilter: string[], expected: number) => {
+  "text_filter can be used to filter log messages",
+  (text: string, text_filter: string[], expected: number) => {
     test("matches the expected count", () => {
       const message: tedge.Message = {
         topic: "dummy",
@@ -43,8 +43,8 @@ describe.each([
         }),
       };
       const output = flow.process(tedge.mockGetTime(), message, <flow.Config>{
-        textFilter,
-        withLogs: true,
+        text_filter,
+        with_logs: true,
       });
       expect(output).toHaveLength(expected);
     });
@@ -92,7 +92,7 @@ describe.each([
         }),
       },
       <flow.Config>{
-        withLogs: true,
+        with_logs: true,
       },
     );
     expect(output).toHaveLength(1);
@@ -157,7 +157,7 @@ describe.each([
 
 test("Process mock data", () => {
   const config: flow.Config = {
-    withLogs: false,
+    with_logs: false,
     debug: false,
     publish_statistics: true,
     stats_topic: "stats/logs",
@@ -167,7 +167,7 @@ test("Process mock data", () => {
       error: 0,
       total: 0,
     },
-    textFilter: [],
+    text_filter: [],
   };
   const messages: tedge.Message[] = journald
     .mockJournaldLogs(10)
@@ -260,7 +260,7 @@ describe.each([
     1,
   ],
 ])(
-  "textFilter can be used to filter log messages",
+  "text_filter can be used to filter log messages",
   (
     testCase: string,
     config: flow.Config,
