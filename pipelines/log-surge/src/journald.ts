@@ -1,4 +1,4 @@
-import { de, faker } from "@faker-js/faker";
+import { faker } from "@faker-js/faker";
 
 const priorities = {
   "0": "emerg",
