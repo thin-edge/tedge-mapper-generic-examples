@@ -4,7 +4,7 @@ input_topics = ["te/device/main///logs/journald"]
 filter = "dist/main.mjs"
 tick_every_seconds = 1
 
-config.withLogs = true
+config.with_logs = true
 config.debug = false
 config.publish_statistics = true
 config.stats_topic = "stats/logs"
@@ -15,4 +15,4 @@ config.threshold.info = 10
 
 # Optional log message filter, which will only include log entries
 # where the message text matches the given regex
-# config.textFilter = ["(connectdfasdf)"]
+# config.text_filter = ["(connect)"]
