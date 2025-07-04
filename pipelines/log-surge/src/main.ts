@@ -68,7 +68,9 @@ export function process(
   };
   if (!text_filter.map((v) => RegExp(v)).every(contains(output.text))) {
     TEST: if (debug) {
-      console.log("Skipping message", {});
+      console.log("Skipping message as it did not match the text filter", {
+        text_filter,
+      });
     }
     return [];
   }
