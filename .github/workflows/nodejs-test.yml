@@ -58,3 +58,10 @@ jobs:
             echo "::notice title=Formatting Check::'format:check' script not found in ${{ matrix.project }}. Skipping."
           fi
         working-directory: ${{ matrix.project }}
+
+  test-summary:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Report overall status
+        run: echo "All project tests passed successfully."
