@@ -9,8 +9,6 @@
     "build": "esbuild src/main.ts --target=es2018 --bundle --outfile=dist/main.mjs --format=esm --drop-labels=DEV,TEST",
     "build:test": "esbuild src/main.ts --target=es2018 --bundle --outfile=dist/main.test.mjs --format=esm",
     "build:watch": "esbuild src/main.ts --watch --target=es2018 --bundle --outfile=dist/main.mjs --format=esm --drop-labels=DEV,TEST",
-    "format": "npx prettier . --write --trailing-comma all",
-    "format:check": "npx prettier . --check --trailing-comma all",
     "start:wasm-quickjs": "wasmer run adamz/quickjs -e quickjs  --mapdir .:. dist/main.test.mjs test",
     "start:quickjs": "qjs dist/main.test.mjs test",
     "start:nodejs": "node dist/main.test.mjs test",
