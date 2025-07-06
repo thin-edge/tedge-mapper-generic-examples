@@ -19,12 +19,16 @@ describe("UptimeTracker", () => {
   });
 
   test("should return 0% uptime when offline only", () => {
-    expect(tracker.getUptimePercentage()).toBe(0);
+    const result = tracker.getUptimePercentage();
+    expect(result.percentage).toBe(0);
+    expect(result.durationMs).toBe(0);
   });
 
   test("should return 100% uptime if always online", () => {
     tracker.updateStatus("online", now - 10 * minute);
-    expect(tracker.getUptimePercentage()).toBeCloseTo(100, 1);
+    const result = tracker.getUptimePercentage();
+    expect(result.percentage).toBeCloseTo(100, 1);
+    expect(result.durationMs).toBeCloseTo(10 * minute, 1);
   });
 
   test("should correctly calculate uptime percentage", () => {
@@ -35,7 +39,10 @@ describe("UptimeTracker", () => {
     // Online: 9min to 5min = 4min, 2min to now = 2min
     // Total online = 6min / 10min = 60%
     const expectedUptime = ((6 * minute) / (10 * minute)) * 100;
-    expect(tracker.getUptimePercentage()).toBeCloseTo(expectedUptime, 1);
+    const result = tracker.getUptimePercentage();
+    expect(result.percentage).toBeCloseTo(expectedUptime, 1);
+    // Duration is from first event in window (now - 9min) to now = 9min
+    expect(result.durationMs).toBeCloseTo(9 * minute, 1);
   });
 
   test("should count interruptions correctly", () => {
@@ -53,7 +60,10 @@ describe("UptimeTracker", () => {
 
     // Only last 2 minutes online within window
     const expectedUptime = ((2 * minute) / (10 * minute)) * 100;
-    expect(tracker.getUptimePercentage()).toBeCloseTo(expectedUptime, 1);
+    const result = tracker.getUptimePercentage();
+    expect(result.percentage).toBeCloseTo(expectedUptime, 1);
+    // Duration is from first event in window (now - 2min) to now = 2min
+    expect(result.durationMs).toBeCloseTo(2 * minute, 1);
     expect(tracker.getInterruptionCount()).toBe(0);
   });
 });

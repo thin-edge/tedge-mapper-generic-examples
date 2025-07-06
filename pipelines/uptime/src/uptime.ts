@@ -20,13 +20,33 @@ export class UptimeTracker {
     }
   }
 
-  getUptimePercentage(currentTime: number = Date.now()): number {
+  /**
+   * Returns the uptime percentage and the total duration (ms) of the recorded history.
+   * @param currentTime The current time in ms
+   * @returns { percentage: number, durationMs: number }
+   */
+  getUptimePercentage(currentTime: number = Date.now()): { percentage: number, durationMs: number } {
     const startTime = currentTime - this.windowSizeMs;
     const relevantHistory = this.getWindowedHistory(startTime, currentTime);
 
-    if (relevantHistory.length === 0) return 0;
+    if (relevantHistory.length === 0) return { percentage: 0, durationMs: 0 };
 
     let totalOnline = 0;
+    let historyStart: number | undefined = undefined;
+    let historyEnd = currentTime;
+
+    // Find the first real event (not a synthetic one at window start)
+    for (let i = 0; i < relevantHistory.length; i++) {
+      if (
+        i > 0 ||
+        (relevantHistory[0].timestamp !== startTime ||
+          (relevantHistory[0].status !== "offline" && relevantHistory[0].status !== "uninitialized"))
+      ) {
+        historyStart = relevantHistory[i].timestamp;
+        break;
+      }
+    }
+    if (historyStart === undefined) historyStart = relevantHistory[0].timestamp;
 
     for (let i = 0; i < relevantHistory.length - 1; i++) {
       const curr = relevantHistory[i];
@@ -42,7 +62,11 @@ export class UptimeTracker {
       totalOnline += currentTime - last.timestamp;
     }
 
-    return Math.min(100, (totalOnline / this.windowSizeMs) * 100);
+    const durationMs = historyEnd - historyStart;
+    return {
+      percentage: Math.min(100, (totalOnline / this.windowSizeMs) * 100),
+      durationMs
+    };
   }
 
   getInterruptionCount(currentTime: number = Date.now()): number {
