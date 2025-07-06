@@ -48,8 +48,9 @@ export function get_state(): FlowState {
 export function process(
   timestamp: Timestamp,
   message: Message,
-  { with_logs = false, debug = false, text_filter = [] }: Config = {},
+  config: Config | null,
 ) {
+  const { with_logs = false, debug = false, text_filter = [] } = config || {};
   TEST: if (debug) {
     console.log("Calling process");
   }
@@ -90,15 +91,13 @@ export function process(
   return [];
 }
 
-export function tick(
-  timestamp: Timestamp,
-  {
+export function tick(timestamp: Timestamp, config: Config | null) {
+  const {
     debug = false,
     publish_statistics = false,
     stats_topic = "stats/logs",
     threshold = {},
-  }: Config = {},
-) {
+  } = config || {};
   TEST: if (debug) {
     console.log("Calling tick");
   }

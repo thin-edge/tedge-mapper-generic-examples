@@ -21,8 +21,9 @@ export interface Config {
 export function process(
   timestamp: Timestamp,
   message: Message,
-  { window_seconds = 86400, debug = false }: Config = {},
+  config: Config | null,
 ) {
+  const { window_seconds = 86400, debug = false } = config || {};
   let status: Status = "online";
   if (message.payload === "0") {
     status = "offline";
@@ -44,14 +45,12 @@ export function process(
   return [];
 }
 
-export function tick(
-  timestamp: Timestamp,
-  {
+export function tick(timestamp: Timestamp, config: Config | null) {
+  const {
     debug = false,
     window_seconds = 86400,
     stats_topic = "example",
-  }: Config = {},
-) {
+  } = config || {};
   const online = state.getUptimePercentage();
   const offline = 100 - online;
   const output: Message[] = [

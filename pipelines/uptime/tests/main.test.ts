@@ -60,3 +60,18 @@ describe("process", () => {
     }
   });
 });
+
+describe("tick", () => {
+  beforeEach(() => {
+    // Reset the internal state of the UptimeTracker in main.ts
+    // This is a bit hacky, ideally UptimeTracker would be injected or resettable
+    // For testing purposes, we can re-initialize it if it's a global instance
+    jest.resetModules();
+  });
+
+  test("Tick should not crash if the config is set to null", () => {
+    const timestamp = tedge.mockGetTime();
+    const output = flow.tick(timestamp, null);
+    expect(output).toHaveLength(1);
+  });
+});
