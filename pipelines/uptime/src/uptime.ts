@@ -21,23 +21,27 @@ export class UptimeTracker {
   }
 
   /**
-   * Returns the uptime percentage and the total duration (ms) of the recorded history.
+   * Returns the uptime percentage, the total duration (ms) of the recorded history,
+   * and the number of times the device was disconnected (offline interruptions).
    * If the observed duration is less than the window size, the percentage is calculated over the observed duration.
    * @param currentTime The current time in ms
-   * @returns { percentage: number, durationMs: number }
+   * @returns { percentage: number, durationMs: number, interruptions: number }
    */
   getUptimePercentage(currentTime: number = Date.now()): {
     percentage: number;
     durationMs: number;
+    interruptions: number;
   } {
     const startTime = currentTime - this.windowSizeMs;
     const relevantHistory = this.getWindowedHistory(startTime, currentTime);
 
-    if (relevantHistory.length === 0) return { percentage: 0, durationMs: 0 };
+    if (relevantHistory.length === 0)
+      return { percentage: 0, durationMs: 0, interruptions: 0 };
 
     let totalOnline = 0;
     let historyStart: number | undefined = undefined;
     let historyEnd = currentTime;
+    let interruptions = 0;
 
     // Find the first real event (not a synthetic one at window start)
     for (let i = 0; i < relevantHistory.length; i++) {
@@ -59,6 +63,9 @@ export class UptimeTracker {
       if (curr.status === "online") {
         totalOnline += next.timestamp - curr.timestamp;
       }
+      if (curr.status === "online" && next.status === "offline") {
+        interruptions++;
+      }
     }
 
     // Handle case where device is still online until now
@@ -72,6 +79,7 @@ export class UptimeTracker {
     return {
       percentage: Math.min(100, (totalOnline / denominator) * 100),
       durationMs,
+      interruptions,
     };
   }
 

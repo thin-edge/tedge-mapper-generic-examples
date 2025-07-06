@@ -42,8 +42,8 @@ describe("UptimeTracker", () => {
     const expectedUptime = ((6 * minute) / (9 * minute)) * 100;
     const result = tracker.getUptimePercentage();
     expect(result.percentage).toBeCloseTo(expectedUptime, 1);
-    // Duration is from first event in window (now - 9min) to now = 9min
     expect(result.durationMs).toBeCloseTo(9 * minute, 1);
+    expect(result.interruptions).toBe(1); // 1 offline transition
   });
 
   test("should count interruptions correctly", () => {
@@ -51,6 +51,8 @@ describe("UptimeTracker", () => {
     tracker.updateStatus("offline", now - 5 * minute);
     tracker.updateStatus("online", now - 2 * minute);
     tracker.updateStatus("offline", now - 1 * minute);
+    const result = tracker.getUptimePercentage();
+    expect(result.interruptions).toBe(2);
     expect(tracker.getInterruptionCount()).toBe(2);
   });
 
@@ -65,8 +67,8 @@ describe("UptimeTracker", () => {
     const expectedUptime = 100;
     const result = tracker.getUptimePercentage();
     expect(result.percentage).toBeCloseTo(expectedUptime, 1);
-    // Duration is from first event in window (now - 2min) to now = 2min
     expect(result.durationMs).toBeCloseTo(2 * minute, 1);
+    expect(result.interruptions).toBe(0);
     expect(tracker.getInterruptionCount()).toBe(0);
   });
 });

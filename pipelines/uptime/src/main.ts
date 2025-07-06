@@ -73,7 +73,11 @@ export function tick(timestamp: Timestamp, config: Config | null) {
     return [];
   }
 
-  const { percentage: online, durationMs } = state.getUptimePercentage();
+  const {
+    percentage: online,
+    durationMs,
+    interruptions,
+  } = state.getUptimePercentage();
   const offline = 100 - online;
   const output: Message[] = [
     {
@@ -82,6 +86,7 @@ export function tick(timestamp: Timestamp, config: Config | null) {
         online,
         offline,
         durationSeconds: Math.round(durationMs / 1000),
+        interruptions,
       }),
     },
   ];
