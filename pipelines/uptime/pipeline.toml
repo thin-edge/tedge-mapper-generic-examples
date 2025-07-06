@@ -1,0 +1,11 @@
+input_topics = [
+    "te/device/main/service/mosquitto-c8y-bridge/status/health",
+    "te/device/main/service/tedge-mapper-bridge-c8y/status/health",
+]
+
+[[stages]]
+filter = "dist/main.mjs"
+tick_every_seconds = 10
+
+config.debug = false
+config.window_seconds = 600
