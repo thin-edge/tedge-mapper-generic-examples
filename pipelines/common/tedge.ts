@@ -14,12 +14,12 @@ export interface Message {
   retain?: boolean;
 }
 
-export function mockGetTime(): Timestamp {
-  const now = Date.now() / 1000;
-  const seconds = Math.trunc(now);
-  const nanoseconds = (now - seconds) * 10e9;
+export function mockGetTime(time: number = Date.now()): Timestamp {
+  const seconds = time / 1000;
+  const whole_seconds = Math.trunc(seconds);
+  const nanoseconds = (seconds - whole_seconds) * 10e9;
   return {
-    seconds,
+    seconds: whole_seconds,
     nanoseconds,
   };
 }
