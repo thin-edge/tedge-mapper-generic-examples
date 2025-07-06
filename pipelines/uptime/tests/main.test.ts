@@ -216,3 +216,43 @@ describe("UptimeTracker process payload variants", () => {
     expect(twinMessage).toBeDefined();
   });
 });
+
+describe("UptimeTracker duration reporting", () => {
+  const { UptimeTracker } = require("../src/uptime");
+  const minute = 60;
+  const now = new Date("2025-01-01T12:00:00Z").getTime();
+
+  beforeEach(() => {
+    jest.setSystemTime(now);
+  });
+
+  test("duration is 0 when no history", () => {
+    const tracker = new UptimeTracker(10);
+    const { durationMs } = tracker.getUptimePercentage();
+    expect(durationMs).toBe(0);
+  });
+
+  test("duration is correct for single event", () => {
+    const tracker = new UptimeTracker(10);
+    tracker.updateStatus("online", now - 5 * minute * 1000);
+    const { durationMs } = tracker.getUptimePercentage();
+    expect(Math.round(durationMs / 1000)).toBe(5 * minute);
+  });
+
+  test("duration is correct for multiple events", () => {
+    const tracker = new UptimeTracker(10);
+    tracker.updateStatus("online", now - 8 * minute * 1000);
+    tracker.updateStatus("offline", now - 3 * minute * 1000);
+    const { durationMs } = tracker.getUptimePercentage();
+    expect(Math.round(durationMs / 1000)).toBe(8 * minute);
+  });
+
+  test("duration is correct when events outside window are ignored", () => {
+    const tracker = new UptimeTracker(5);
+    tracker.updateStatus("online", now - 10 * minute * 1000);
+    tracker.updateStatus("offline", now - 2 * minute * 1000);
+    const { durationMs } = tracker.getUptimePercentage();
+    // The duration is from the window start (now - 5min) to now, because a synthetic event is added at the window start
+    expect(Math.round(durationMs / 1000)).toBe(5 * minute);
+  });
+});
