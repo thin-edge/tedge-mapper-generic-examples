@@ -244,9 +244,9 @@ describe("UptimeTracker duration reporting", () => {
     const tracker = new UptimeTracker(10);
     tracker.updateStatus("online", now - 8 * minute * 1000);
     tracker.updateStatus("offline", now - 3 * minute * 1000);
-    const { durationMs } = tracker.getUptimePercentage();
-    // Should be 8 minutes (from first event to now)
+    const { durationMs, interruptions } = tracker.getUptimePercentage();
     expect(Math.round(durationMs / 1000)).toBe(8 * minute);
+    expect(interruptions).toBe(1);
   });
 
   test("duration is correct when events outside window are ignored", () => {
@@ -273,9 +273,11 @@ describe("UptimeTracker duration reporting", () => {
     // 2 minutes online, 1 minute offline
     tracker.updateStatus("online", now - 3 * minute * 1000);
     tracker.updateStatus("offline", now - 1 * minute * 1000);
-    const { percentage, durationMs } = tracker.getUptimePercentage();
+    const { percentage, durationMs, interruptions } =
+      tracker.getUptimePercentage();
     // 2 min online, 1 min offline, duration = 3 min (observed duration)
     expect(Math.round(durationMs / 1000)).toBe(3 * minute);
     expect(percentage).toBeCloseTo((2 / 3) * 100, 1);
+    expect(interruptions).toBe(1);
   });
 });
