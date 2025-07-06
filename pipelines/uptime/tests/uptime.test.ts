@@ -37,8 +37,9 @@ describe("UptimeTracker", () => {
     tracker.updateStatus("online", now - 2 * minute);
 
     // Online: 9min to 5min = 4min, 2min to now = 2min
-    // Total online = 6min / 10min = 60%
-    const expectedUptime = ((6 * minute) / (10 * minute)) * 100;
+    // Observed duration: 9min to now = 9min
+    // Total online = 6min / 9min = 66.67%
+    const expectedUptime = ((6 * minute) / (9 * minute)) * 100;
     const result = tracker.getUptimePercentage();
     expect(result.percentage).toBeCloseTo(expectedUptime, 1);
     // Duration is from first event in window (now - 9min) to now = 9min
@@ -59,7 +60,9 @@ describe("UptimeTracker", () => {
     tracker.updateStatus("online", now - 2 * minute);
 
     // Only last 2 minutes online within window
-    const expectedUptime = ((2 * minute) / (10 * minute)) * 100;
+    // Observed duration: 2min to now = 2min
+    // Uptime: 2min / 2min = 100%
+    const expectedUptime = 100;
     const result = tracker.getUptimePercentage();
     expect(result.percentage).toBeCloseTo(expectedUptime, 1);
     // Duration is from first event in window (now - 2min) to now = 2min

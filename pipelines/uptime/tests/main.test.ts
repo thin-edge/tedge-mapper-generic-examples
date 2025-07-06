@@ -223,7 +223,7 @@ describe("UptimeTracker duration reporting", () => {
   const now = new Date("2025-01-01T12:00:00Z").getTime();
 
   beforeEach(() => {
-    jest.setSystemTime(now);
+    jest.setSystemTime(now); // Ensure system time is set for each test
   });
 
   test("duration is 0 when no history", () => {
@@ -236,6 +236,7 @@ describe("UptimeTracker duration reporting", () => {
     const tracker = new UptimeTracker(10);
     tracker.updateStatus("online", now - 5 * minute * 1000);
     const { durationMs } = tracker.getUptimePercentage();
+    // Should be 5 minutes (from event to now)
     expect(Math.round(durationMs / 1000)).toBe(5 * minute);
   });
 
@@ -244,6 +245,7 @@ describe("UptimeTracker duration reporting", () => {
     tracker.updateStatus("online", now - 8 * minute * 1000);
     tracker.updateStatus("offline", now - 3 * minute * 1000);
     const { durationMs } = tracker.getUptimePercentage();
+    // Should be 8 minutes (from first event to now)
     expect(Math.round(durationMs / 1000)).toBe(8 * minute);
   });
 
@@ -252,7 +254,28 @@ describe("UptimeTracker duration reporting", () => {
     tracker.updateStatus("online", now - 10 * minute * 1000);
     tracker.updateStatus("offline", now - 2 * minute * 1000);
     const { durationMs } = tracker.getUptimePercentage();
-    // The duration is from the window start (now - 5min) to now, because a synthetic event is added at the window start
+    // Should be 5 minutes (window size, synthetic event at window start)
     expect(Math.round(durationMs / 1000)).toBe(5 * minute);
+  });
+
+  test("percentage is calculated over observed duration if less than window size", () => {
+    const tracker = new UptimeTracker(10); // 10 min window
+    // Only 2 minutes of history
+    tracker.updateStatus("online", now - 2 * minute * 1000);
+    const { percentage, durationMs } = tracker.getUptimePercentage();
+    // Should be 100% online over 2 minutes (observed duration)
+    expect(Math.round(durationMs / 1000)).toBe(2 * minute);
+    expect(percentage).toBeCloseTo(100, 1);
+  });
+
+  test("percentage is calculated over observed duration for partial online", () => {
+    const tracker = new UptimeTracker(10); // 10 min window
+    // 2 minutes online, 1 minute offline
+    tracker.updateStatus("online", now - 3 * minute * 1000);
+    tracker.updateStatus("offline", now - 1 * minute * 1000);
+    const { percentage, durationMs } = tracker.getUptimePercentage();
+    // 2 min online, 1 min offline, duration = 3 min (observed duration)
+    expect(Math.round(durationMs / 1000)).toBe(3 * minute);
+    expect(percentage).toBeCloseTo((2 / 3) * 100, 1);
   });
 });
