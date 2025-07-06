@@ -106,7 +106,10 @@ describe("UptimeTracker advanced features", () => {
     const tracker = new UptimeTracker(1);
     tracker.reset(5, "offline", 1234567890);
     expect(tracker["windowSizeMs"]).toBe(5 * 60 * 1000);
-    expect(tracker["history"][0]).toEqual({ status: "offline", timestamp: 1234567890 });
+    expect(tracker["history"][0]).toEqual({
+      status: "offline",
+      timestamp: 1234567890,
+    });
   });
 });
 
@@ -119,11 +122,16 @@ describe("UptimeTracker process payload variants", () => {
   });
 
   test('payload "1" sets status to online', () => {
-    const timestamp = { seconds: Math.floor(now / 1000), nanoseconds: (now % 1000) * 1e6 };
+    const timestamp = {
+      seconds: Math.floor(now / 1000),
+      nanoseconds: (now % 1000) * 1e6,
+    };
     const message = { topic: "test", payload: "1" };
     flow.process(timestamp, message, null);
     const output = flow.tick(timestamp, null);
-    const twinMessage = output.find((msg) => msg.topic.includes("twin/onlineTracker"));
+    const twinMessage = output.find((msg) =>
+      msg.topic.includes("twin/onlineTracker"),
+    );
     expect(twinMessage).toBeDefined();
     if (twinMessage) {
       const payload = JSON.parse(twinMessage.payload);
@@ -132,11 +140,16 @@ describe("UptimeTracker process payload variants", () => {
   });
 
   test('payload "0" sets status to offline', () => {
-    const timestamp = { seconds: Math.floor(now / 1000), nanoseconds: (now % 1000) * 1e6 };
+    const timestamp = {
+      seconds: Math.floor(now / 1000),
+      nanoseconds: (now % 1000) * 1e6,
+    };
     const message = { topic: "test", payload: "0" };
     flow.process(timestamp, message, null);
     const output = flow.tick(timestamp, null);
-    const twinMessage = output.find((msg) => msg.topic.includes("twin/onlineTracker"));
+    const twinMessage = output.find((msg) =>
+      msg.topic.includes("twin/onlineTracker"),
+    );
     expect(twinMessage).toBeDefined();
     if (twinMessage) {
       const payload = JSON.parse(twinMessage.payload);
@@ -145,11 +158,19 @@ describe("UptimeTracker process payload variants", () => {
   });
 
   test('payload {"status": "up"} sets status to online', () => {
-    const timestamp = { seconds: Math.floor(now / 1000), nanoseconds: (now % 1000) * 1e6 };
-    const message = { topic: "test", payload: JSON.stringify({ status: "up" }) };
+    const timestamp = {
+      seconds: Math.floor(now / 1000),
+      nanoseconds: (now % 1000) * 1e6,
+    };
+    const message = {
+      topic: "test",
+      payload: JSON.stringify({ status: "up" }),
+    };
     flow.process(timestamp, message, null);
     const output = flow.tick(timestamp, null);
-    const twinMessage = output.find((msg) => msg.topic.includes("twin/onlineTracker"));
+    const twinMessage = output.find((msg) =>
+      msg.topic.includes("twin/onlineTracker"),
+    );
     expect(twinMessage).toBeDefined();
     if (twinMessage) {
       const payload = JSON.parse(twinMessage.payload);
@@ -158,11 +179,19 @@ describe("UptimeTracker process payload variants", () => {
   });
 
   test('payload {"status": "down"} sets status to offline', () => {
-    const timestamp = { seconds: Math.floor(now / 1000), nanoseconds: (now % 1000) * 1e6 };
-    const message = { topic: "test", payload: JSON.stringify({ status: "down" }) };
+    const timestamp = {
+      seconds: Math.floor(now / 1000),
+      nanoseconds: (now % 1000) * 1e6,
+    };
+    const message = {
+      topic: "test",
+      payload: JSON.stringify({ status: "down" }),
+    };
     flow.process(timestamp, message, null);
     const output = flow.tick(timestamp, null);
-    const twinMessage = output.find((msg) => msg.topic.includes("twin/onlineTracker"));
+    const twinMessage = output.find((msg) =>
+      msg.topic.includes("twin/onlineTracker"),
+    );
     expect(twinMessage).toBeDefined();
     if (twinMessage) {
       const payload = JSON.parse(twinMessage.payload);
@@ -171,11 +200,19 @@ describe("UptimeTracker process payload variants", () => {
   });
 
   test('payload {"status": "unknown"} does not throw and sets status', () => {
-    const timestamp = { seconds: Math.floor(now / 1000), nanoseconds: (now % 1000) * 1e6 };
-    const message = { topic: "test", payload: JSON.stringify({ status: "unknown" }) };
+    const timestamp = {
+      seconds: Math.floor(now / 1000),
+      nanoseconds: (now % 1000) * 1e6,
+    };
+    const message = {
+      topic: "test",
+      payload: JSON.stringify({ status: "unknown" }),
+    };
     expect(() => flow.process(timestamp, message, null)).not.toThrow();
     const output = flow.tick(timestamp, null);
-    const twinMessage = output.find((msg) => msg.topic.includes("twin/onlineTracker"));
+    const twinMessage = output.find((msg) =>
+      msg.topic.includes("twin/onlineTracker"),
+    );
     expect(twinMessage).toBeDefined();
   });
 });

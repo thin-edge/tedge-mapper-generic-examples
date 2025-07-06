@@ -39,11 +39,10 @@ export function process(
   }
 
   const timestamp_milliseconds = fromTimestamp(timestamp);
-  if (!initTracker(state, window_size_minutes, status, timestamp_milliseconds)) {
-    state.updateStatus(
-      status,
-      timestamp_milliseconds,
-    );
+  if (
+    !initTracker(state, window_size_minutes, status, timestamp_milliseconds)
+  ) {
+    state.updateStatus(status, timestamp_milliseconds);
   }
 
   return [];
@@ -56,12 +55,21 @@ export function tick(timestamp: Timestamp, config: Config | null) {
     default_status = "uninitialized",
   } = config || {};
 
-  if (initTracker(state, window_size_minutes, default_status, fromTimestamp(timestamp))) {
+  if (
+    initTracker(
+      state,
+      window_size_minutes,
+      default_status,
+      fromTimestamp(timestamp),
+    )
+  ) {
     return [];
   }
 
   if (state.isUninitialized()) {
-    console.log("UptimeTracker is not initialized, waiting for initial status of the subscribed topic");
+    console.log(
+      "UptimeTracker is not initialized, waiting for initial status of the subscribed topic",
+    );
     return [];
   }
 
@@ -88,12 +96,12 @@ export function initTracker(
   tracker: UptimeTracker,
   windowSizeMinutes: number,
   initialStatus: Status,
-  initialTimestamp?: number
+  initialTimestamp?: number,
 ): boolean {
   if (!trackerInitialized) {
     tracker.reset(windowSizeMinutes, initialStatus, initialTimestamp);
     trackerInitialized = true;
     return true;
   }
-  return false
+  return false;
 }
