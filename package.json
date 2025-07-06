@@ -8,7 +8,8 @@
     "format": "npx prettier . --write --trailing-comma all",
     "format:check": "npx prettier . --check --trailing-comma all",
     "test": "jest --coverageProvider=v8 --coverage",
-    "build-all": "npm run build --workspaces"
+    "build-all": "npm run build --workspaces",
+    "publish": "node ./scripts/publish-images.js"
   },
   "author": "",
   "license": "ISC",
