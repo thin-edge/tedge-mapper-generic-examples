@@ -78,7 +78,7 @@ jobs:
       - uses: actions/setup-go@v5
         if: github.ref == 'refs/heads/main'
         with:
-          go-version: 'stable'
+          go-version: "stable"
           cache: false
       - name: Install tedge-oscar
         run: go install github.com/reubenmiller/tedge-oscar@latest
