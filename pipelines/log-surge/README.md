@@ -23,11 +23,9 @@ journalctl -o json -b ----cursor-file=./tmp.cursor --no-pager -n 100
 
 ### Improvements
 
-* Allow the pipeline to receive input from a command's standard output rather than over MQTT. The command could then be executed periodically by the mapper, and the output.
-
+- Allow the pipeline to receive input from a command's standard output rather than over MQTT. The command could then be executed periodically by the mapper, and the output.
 
 ## Using it
-
 
 ### Install dependencies
 

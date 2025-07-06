@@ -14,8 +14,9 @@ The flow is represented by the following steps:
 The pipeline expects the thin-edge.io service status message to be one of the following formats:
 
 **JSON payload**
+
 ```json
-{"status":"down | up"}
+{ "status": "down | up" }
 ```
 
 **Text payload**
@@ -23,7 +24,6 @@ The pipeline expects the thin-edge.io service status message to be one of the fo
 ```
 1 or 0
 ```
-
 
 ## Using it
 
