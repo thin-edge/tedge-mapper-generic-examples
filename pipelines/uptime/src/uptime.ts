@@ -25,7 +25,10 @@ export class UptimeTracker {
    * @param currentTime The current time in ms
    * @returns { percentage: number, durationMs: number }
    */
-  getUptimePercentage(currentTime: number = Date.now()): { percentage: number, durationMs: number } {
+  getUptimePercentage(currentTime: number = Date.now()): {
+    percentage: number;
+    durationMs: number;
+  } {
     const startTime = currentTime - this.windowSizeMs;
     const relevantHistory = this.getWindowedHistory(startTime, currentTime);
 
@@ -39,8 +42,9 @@ export class UptimeTracker {
     for (let i = 0; i < relevantHistory.length; i++) {
       if (
         i > 0 ||
-        (relevantHistory[0].timestamp !== startTime ||
-          (relevantHistory[0].status !== "offline" && relevantHistory[0].status !== "uninitialized"))
+        relevantHistory[0].timestamp !== startTime ||
+        (relevantHistory[0].status !== "offline" &&
+          relevantHistory[0].status !== "uninitialized")
       ) {
         historyStart = relevantHistory[i].timestamp;
         break;
@@ -65,7 +69,7 @@ export class UptimeTracker {
     const durationMs = historyEnd - historyStart;
     return {
       percentage: Math.min(100, (totalOnline / this.windowSizeMs) * 100),
-      durationMs
+      durationMs,
     };
   }
 
