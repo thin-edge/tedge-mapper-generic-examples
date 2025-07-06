@@ -22,6 +22,7 @@ export class UptimeTracker {
 
   /**
    * Returns the uptime percentage and the total duration (ms) of the recorded history.
+   * If the observed duration is less than the window size, the percentage is calculated over the observed duration.
    * @param currentTime The current time in ms
    * @returns { percentage: number, durationMs: number }
    */
@@ -67,8 +68,9 @@ export class UptimeTracker {
     }
 
     const durationMs = historyEnd - historyStart;
+    const denominator = durationMs > 0 ? durationMs : this.windowSizeMs;
     return {
-      percentage: Math.min(100, (totalOnline / this.windowSizeMs) * 100),
+      percentage: Math.min(100, (totalOnline / denominator) * 100),
       durationMs,
     };
   }
