@@ -1,4 +1,4 @@
-export type Status = "online" | "offline";
+export type Status = "online" | "offline" | "uninitialized";
 
 interface StatusChange {
   timestamp: number;
@@ -60,6 +60,35 @@ export class UptimeTracker {
     }
 
     return count;
+  }
+
+  /**
+   * Reset the tracker with a new window size and initial state.
+   * @param windowSizeMinutes New window size in minutes
+   * @param initialStatus Initial status ("online" or "offline")
+   * @param initialTimestamp Optional initial timestamp (defaults to Date.now())
+   */
+  reset(
+    windowSizeMinutes: number,
+    initialStatus: Status,
+    initialTimestamp?: number,
+  ) {
+    this.windowSizeMs = windowSizeMinutes * 60 * 1000;
+    this.history = [
+      {
+        status: initialStatus,
+        timestamp: initialTimestamp ?? Date.now(),
+      },
+    ];
+  }
+
+  /**
+   * Returns true if the tracker is in the uninitialized state.
+   * This is true if the first status is "uninitialized" or if the history is empty.
+   */
+  isUninitialized(): boolean {
+    if (this.history.length === 0) return true;
+    return this.history[0].status === "uninitialized";
   }
 
   private getWindowedHistory(

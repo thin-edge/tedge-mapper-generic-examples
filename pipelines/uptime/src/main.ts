@@ -4,26 +4,25 @@
 import { Message, Timestamp, Run } from "../../common/tedge";
 import { UptimeTracker, Status } from "./uptime";
 
-export class State {
-  online_percentage?: number;
-  offline_prediction?: number;
-}
-
 const state = new UptimeTracker(10);
 
+function fromTimestamp(t: Timestamp): number {
+  return t.seconds * 1000 + t.nanoseconds / 1e6;
+}
+
 export interface Config {
-  // Enable debug logging
-  debug?: boolean;
-  window_seconds?: number;
+  window_size_minutes?: number;
   stats_topic?: string;
+  default_status?: Status;
 }
 
 export function process(
   timestamp: Timestamp,
   message: Message,
-  config: Config | null,
+  config: Config | null = {},
 ) {
-  const { window_seconds = 86400, debug = false } = config || {};
+  const { window_size_minutes = 1440 } = config || {};
+
   let status: Status = "online";
   if (message.payload === "0") {
     status = "offline";
@@ -38,24 +37,39 @@ export function process(
       status = "offline";
     }
   }
-  state.updateStatus(
-    status,
-    timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6,
-  );
+
+  const timestamp_milliseconds = fromTimestamp(timestamp);
+  if (!initTracker(state, window_size_minutes, status, timestamp_milliseconds)) {
+    state.updateStatus(
+      status,
+      timestamp_milliseconds,
+    );
+  }
+
   return [];
 }
 
 export function tick(timestamp: Timestamp, config: Config | null) {
   const {
-    debug = false,
-    window_seconds = 86400,
-    stats_topic = "example",
+    window_size_minutes = 1440,
+    stats_topic = "twin/onlineTracker",
+    default_status = "uninitialized",
   } = config || {};
+
+  if (initTracker(state, window_size_minutes, default_status, fromTimestamp(timestamp))) {
+    return [];
+  }
+
+  if (state.isUninitialized()) {
+    console.log("UptimeTracker is not initialized, waiting for initial status of the subscribed topic");
+    return [];
+  }
+
   const online = state.getUptimePercentage();
   const offline = 100 - online;
   const output: Message[] = [
     {
-      topic: `te/device/main///twin/onlineTracker`,
+      topic: `te/device/main///${stats_topic}`,
       payload: JSON.stringify({
         online,
         offline,
@@ -63,4 +77,23 @@ export function tick(timestamp: Timestamp, config: Config | null) {
     },
   ];
   return output;
+}
+
+let trackerInitialized = false;
+
+/**
+ * Initialize the tracker only once. Accepts the state (UptimeTracker instance) and any reset arguments.
+ */
+export function initTracker(
+  tracker: UptimeTracker,
+  windowSizeMinutes: number,
+  initialStatus: Status,
+  initialTimestamp?: number
+): boolean {
+  if (!trackerInitialized) {
+    tracker.reset(windowSizeMinutes, initialStatus, initialTimestamp);
+    trackerInitialized = true;
+    return true;
+  }
+  return false
 }
