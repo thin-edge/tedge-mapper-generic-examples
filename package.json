@@ -1,0 +1,30 @@
+{
+  "name": "tedge-mapper-generic-workspace",
+  "version": "1.0.0",
+  "description": "Experimental repository to exchange examples which use the upcoming generic tedge-mapper feature",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "format": "npx prettier . --write --trailing-comma all",
+    "format:check": "npx prettier . --check --trailing-comma all",
+    "test": "jest --coverageProvider=v8 --coverage",
+    "build-all": "npm run build --workspaces"
+  },
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "pipelines/*"
+  ],
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "esbuild": "^0.25.5",
+    "esbuild-register": "^3.6.0",
+    "jest": "^30.0.4",
+    "jest-esbuild": "^0.4.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "tedge": "^1.0.0"
+  }
+}
