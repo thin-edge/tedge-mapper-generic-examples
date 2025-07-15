@@ -80,6 +80,7 @@ export function tick(timestamp: Timestamp, config: Config | null) {
   } = state.getUptimePercentage();
   const online = Math.round(onlineRaw * 1000) / 1000;
   const offline = parseFloat((100 - online).toFixed(3));
+  const currentStatus = state.currentStatus();
   const output: Message[] = [
     {
       topic: `te/device/main///${stats_topic}`,
@@ -88,6 +89,7 @@ export function tick(timestamp: Timestamp, config: Config | null) {
         offline,
         durationSeconds: Math.round(durationMs / 1000),
         interruptions,
+        currentStatus,
       }),
     },
   ];

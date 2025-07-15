@@ -41,6 +41,7 @@ describe("process", () => {
       if (twinMessage) {
         const payload = JSON.parse(twinMessage.payload);
         expect(payload.online).toBeCloseTo(100, 1);
+        expect(payload).toHaveProperty("currentStatus", "online");
       }
     });
   });
@@ -57,6 +58,7 @@ describe("process", () => {
     if (twinMessage) {
       const payload = JSON.parse(twinMessage.payload);
       expect(payload.offline).toBeCloseTo(100, 1);
+      expect(payload).toHaveProperty("currentStatus", "offline");
     }
   });
 });
