@@ -101,6 +101,17 @@ export class UptimeTracker {
   }
 
   /**
+   * Get the current status
+   * @returns status Current status
+   */
+  currentStatus(): Status {
+    if (this.history.length > 0) {
+      return this.history[this.history.length - 1].status;
+    }
+    return "uninitialized";
+  }
+
+  /**
    * Reset the tracker with a new window size and initial state.
    * @param windowSizeMinutes New window size in minutes
    * @param initialStatus Initial status ("online" or "offline")
