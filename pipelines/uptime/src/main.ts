@@ -79,7 +79,7 @@ export function tick(timestamp: Timestamp, config: Config | null) {
     interruptions,
   } = state.getUptimePercentage();
   const online = Math.round(onlineRaw * 1000) / 1000;
-  const offline = 100 - online;
+  const offline = parseFloat((100 - online).toFixed(3));
   const output: Message[] = [
     {
       topic: `te/device/main///${stats_topic}`,
