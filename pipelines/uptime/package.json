@@ -1,6 +1,6 @@
 {
   "name": "uptime",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "This pipeline demonstrates how to keep track of online calculator.",
   "source": "src/main.ts",
   "module": "dist/main.mjs",
