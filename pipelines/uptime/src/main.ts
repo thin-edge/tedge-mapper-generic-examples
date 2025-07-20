@@ -16,11 +16,7 @@ export interface Config {
   default_status?: Status;
 }
 
-export function process(
-  timestamp: Timestamp,
-  message: Message,
-  config: Config | null = {},
-) {
+export function onMessage(message: Message, config: Config | null = {}) {
   const { window_size_minutes = 1440 } = config || {};
 
   let status: Status = "online";
@@ -38,7 +34,7 @@ export function process(
     }
   }
 
-  const timestamp_milliseconds = fromTimestamp(timestamp);
+  const timestamp_milliseconds = fromTimestamp(message.timestamp);
   if (
     !initTracker(state, window_size_minutes, status, timestamp_milliseconds)
   ) {
@@ -48,7 +44,7 @@ export function process(
   return [];
 }
 
-export function tick(timestamp: Timestamp, config: Config | null) {
+export function onInterval(timestamp: Timestamp, config: Config | null) {
   const {
     window_size_minutes = 1440,
     stats_topic = "twin/onlineTracker",
@@ -83,6 +79,7 @@ export function tick(timestamp: Timestamp, config: Config | null) {
   const currentStatus = state.currentStatus();
   const output: Message[] = [
     {
+      timestamp,
       topic: `te/device/main///${stats_topic}`,
       payload: JSON.stringify({
         online,
