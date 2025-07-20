@@ -4,7 +4,7 @@ input_topics = [
 ]
 
 [[steps]]
-filter = "dist/main.mjs"
+script = "dist/main.mjs"
 tick_every_seconds = 10
 config.window_size_minutes = 1440
 config.stats_topic = "twin/onlineTracker"
