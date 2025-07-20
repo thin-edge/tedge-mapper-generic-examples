@@ -10,18 +10,19 @@ beforeEach(() => {
 
 test("Config with_logs returns the log entries", () => {
   const message: tedge.Message = {
+    timestamp: tedge.mockGetTime(),
     topic: "dummy",
     payload: JSON.stringify(<journald.JOURNALD_RAW_MESSAGE>{
       _SOURCE_REALTIME_TIMESTAMP: "1751468051367349",
       MESSAGE: "example",
     }),
   };
-  const output1 = flow.process(tedge.mockGetTime(), message, <flow.Config>{
+  const output1 = flow.onMessage(message, <flow.Config>{
     with_logs: true,
   });
   expect(output1).toHaveLength(1);
 
-  const output2 = flow.process(tedge.mockGetTime(), message, <flow.Config>{
+  const output2 = flow.onMessage(message, <flow.Config>{
     with_logs: false,
   });
   expect(output2).toHaveLength(0);
@@ -36,13 +37,14 @@ describe.each([
   (text: string, text_filter: string[], expected: number) => {
     test("matches the expected count", () => {
       const message: tedge.Message = {
+        timestamp: tedge.mockGetTime(),
         topic: "dummy",
         payload: JSON.stringify(<journald.JOURNALD_RAW_MESSAGE>{
           _SOURCE_REALTIME_TIMESTAMP: "1751468051367349",
           MESSAGE: text,
         }),
       };
-      const output = flow.process(tedge.mockGetTime(), message, <flow.Config>{
+      const output = flow.onMessage(message, <flow.Config>{
         text_filter,
         with_logs: true,
       });
@@ -52,9 +54,9 @@ describe.each([
 );
 
 test("Detect log entries with an unknown log level", () => {
-  const output = flow.process(
-    { seconds: 1, nanoseconds: 1234 },
+  const output = flow.onMessage(
     {
+      timestamp: { seconds: 1, nanoseconds: 1234 },
       topic: "",
       payload: JSON.stringify({
         _SOURCE_REALTIME_TIMESTAMP: 123456,
@@ -81,9 +83,9 @@ describe.each([
   ],
 ])("mosquitto log entry parsing", (logMessage: string, expected: string) => {
   test("Strips leading timestamp from mosquitto log messages", () => {
-    const output = flow.process(
-      { seconds: 1, nanoseconds: 1234 },
+    const output = flow.onMessage(
       {
+        timestamp: { seconds: 1, nanoseconds: 1234 },
         topic: "",
         payload: JSON.stringify(<journald.JOURNALD_RAW_MESSAGE>{
           SYSLOG_IDENTIFIER: "mosquitto",
@@ -114,9 +116,9 @@ describe.each([
   "Detect log %s level from message",
   (level: string, expected: journald.Statistics) => {
     test(`Uppercase ${level.toUpperCase()}`, () => {
-      const output = flow.process(
-        tedge.mockGetTime(),
+      const output = flow.onMessage(
         {
+          timestamp: tedge.mockGetTime(),
           topic: "dummy",
           payload: JSON.stringify(<journald.JOURNALD_RAW_MESSAGE>{
             _SOURCE_REALTIME_TIMESTAMP: "123456",
@@ -134,9 +136,9 @@ describe.each([
     });
 
     test(`Lowercase ${level.toLowerCase()}`, () => {
-      const output = flow.process(
-        tedge.mockGetTime(),
+      const output = flow.onMessage(
         {
+          timestamp: tedge.mockGetTime(),
           topic: "dummy",
           payload: JSON.stringify(<journald.JOURNALD_RAW_MESSAGE>{
             _SOURCE_REALTIME_TIMESTAMP: "123456",
@@ -172,6 +174,7 @@ test("Process mock data", () => {
   const messages: tedge.Message[] = journald
     .mockJournaldLogs(10)
     .map((value) => ({
+      timestamp: tedge.mockGetTime(),
       topic: "dummy",
       payload: JSON.stringify(value),
     }));
@@ -180,7 +183,7 @@ test("Process mock data", () => {
 });
 
 /*
-    Tick
+    onInterval
 */
 describe.each([
   [
@@ -270,7 +273,7 @@ describe.each([
   ) => {
     test(testCase, () => {
       flow.get_state().stats = stats;
-      const output = flow.tick(tedge.mockGetTime(), config);
+      const output = flow.onInterval(tedge.mockGetTime(), config);
       expect(output).toHaveLength(expectedLength);
       const lastMessage = JSON.parse(output[output.length - 1].payload);
       expect(lastMessage).toHaveProperty("text");
@@ -295,7 +298,7 @@ describe("log statistics", () => {
       err: 1,
       total: 13,
     });
-    const output = flow.tick(tedge.mockGetTime(), config);
+    const output = flow.onInterval(tedge.mockGetTime(), config);
     expect(output.length).toBeGreaterThanOrEqual(1);
     expect(output[0].topic).toStrictEqual(expectedTopic);
     const payload = JSON.parse(output[0].payload);
@@ -319,7 +322,7 @@ describe("log statistics", () => {
       err: 1,
       total: 13,
     });
-    const output1 = flow.tick(tedge.mockGetTime(), config);
+    const output1 = flow.onInterval(tedge.mockGetTime(), config);
     expect(output1).toHaveLength(0);
 
     // second run
@@ -329,7 +332,7 @@ describe("log statistics", () => {
       err: 1,
       total: 13,
     });
-    const output2 = flow.tick(tedge.mockGetTime(), config);
+    const output2 = flow.onInterval(tedge.mockGetTime(), config);
     expect(output2).toHaveLength(1);
     expect(output2[0].payload).toBeFalsy();
     expect(output2[0].topic).toEqual(`te/device/main///a/log_surge`);

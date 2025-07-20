@@ -4,11 +4,13 @@ export interface Timestamp {
 }
 
 export interface Flow {
-  process(timestamp: Timestamp, message: Message, config: any): Message[];
-  tick?: (flag: any, config: any) => Message[];
+  onMessage(message: Message, config: any): Message[];
+  onInterval?: (timestamp: Timestamp, config: any) => Message[];
+  onConfigUpdate?: (message: Message, config: any) => void;
 }
 
 export interface Message {
+  timestamp: Timestamp;
   topic: string;
   payload: string;
   retain?: boolean;
@@ -28,15 +30,16 @@ export function Run(module: Flow, messages: Message[], config: any): Message[] {
   const outputMessages: Message[] = [];
   messages.forEach((message) => {
     const timestamp = mockGetTime();
-    const output = module.process(timestamp, message, config);
+    message.timestamp = timestamp;
+    const output = module.onMessage(message, config);
     outputMessages.push(...output);
     if (output.length > 0) {
       console.log(JSON.stringify(output));
     }
   });
 
-  if (module.tick) {
-    const output = module.tick(mockGetTime(), config);
+  if (module.onInterval) {
+    const output = module.onInterval(mockGetTime(), config);
     outputMessages.push(...output);
     console.log(JSON.stringify(output));
   }

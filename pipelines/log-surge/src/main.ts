@@ -3,7 +3,7 @@
 */
 
 import * as model from "../../common/model";
-import { Message, Timestamp, Run } from "./../../common/tedge";
+import { Message, Timestamp, Run, mockGetTime } from "./../../common/tedge";
 import * as journald from "./journald";
 import * as testing from "../../common/testing";
 
@@ -45,11 +45,7 @@ export function get_state(): FlowState {
   return state;
 }
 
-export function process(
-  timestamp: Timestamp,
-  message: Message,
-  config: Config | null,
-) {
+export function onMessage(message: Message, config: Config | null): Message[] {
   const { with_logs = false, debug = false, text_filter = [] } = config || {};
   TEST: if (debug) {
     console.log("Calling process");
@@ -83,6 +79,7 @@ export function process(
   if (with_logs) {
     return [
       {
+        timestamp: message.timestamp,
         topic: "stream/logs/journald",
         payload: JSON.stringify(output),
       },
@@ -91,7 +88,7 @@ export function process(
   return [];
 }
 
-export function tick(timestamp: Timestamp, config: Config | null) {
+export function onInterval(timestamp: Timestamp, config: Config | null) {
   const {
     debug = false,
     publish_statistics = false,
@@ -110,6 +107,7 @@ export function tick(timestamp: Timestamp, config: Config | null) {
 
   if (publish_statistics) {
     output.push({
+      timestamp: timestamp,
       topic: `te/device/main///${stats_topic}`,
       payload: JSON.stringify(stats),
     });
@@ -138,6 +136,7 @@ export function tick(timestamp: Timestamp, config: Config | null) {
 
   if (alarmText) {
     output.push({
+      timestamp: timestamp,
       topic: `te/device/main///a/log_surge`,
       payload: JSON.stringify({
         text: alarmText,
@@ -151,6 +150,7 @@ export function tick(timestamp: Timestamp, config: Config | null) {
       console.log("clearing log_surge alarm (if present)");
     }
     output.push({
+      timestamp: timestamp,
       topic: `te/device/main///a/log_surge`,
       retain: true,
       payload: ``,
@@ -166,6 +166,7 @@ export function tick(timestamp: Timestamp, config: Config | null) {
 
 TEST: testing.run(1, "test", () => {
   const messages: Message[] = journald.mockJournaldLogs(10).map((value) => ({
+    timestamp: mockGetTime(),
     topic: "dummy",
     payload: JSON.stringify(value),
   }));
@@ -179,8 +180,8 @@ TEST: testing.run(1, "test", () => {
   };
   return Run(
     {
-      tick,
-      process,
+      onInterval,
+      onMessage,
     },
     messages,
     config,
