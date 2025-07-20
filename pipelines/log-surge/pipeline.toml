@@ -1,7 +1,7 @@
 input_topics = ["te/device/main///logs/journald"]
 
-[[stages]]
-filter = "dist/main.mjs"
+[[steps]]
+script = "dist/main.mjs"
 tick_every_seconds = 1
 
 config.with_logs = true
