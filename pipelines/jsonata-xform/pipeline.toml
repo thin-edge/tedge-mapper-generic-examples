@@ -1,0 +1,25 @@
+input_topics = [
+    "te/device/main///m/multiple_values",
+]
+
+[[steps]]
+script = "dist/main.mjs"
+[[steps.config.substitutions]]
+pathSource = "$replace(dateTo,' ','T')"
+pathTarget = "dateTo"
+
+[[steps.config.substitutions]]
+pathSource = "time"
+pathTarget = "timestamp"
+
+[[steps.config.substitutions]]
+pathSource = "value + 1"
+pathTarget = "some.nested.value"
+
+[[steps.config.substitutions]]
+pathSource = "value"
+pathTarget = "some.other.value"
+
+[[steps.config.substitutions]]
+pathSource = "'˚C'"
+pathTarget = "some.other.unit"
