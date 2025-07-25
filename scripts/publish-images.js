@@ -2,7 +2,7 @@ const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-const flowFilename = "pipeline.toml";
+const flowFilename = "flow.toml";
 const registry = process.env.REGISTRY || "ghcr.io";
 const owner = process.env.OWNER || "thin-edge";
 
