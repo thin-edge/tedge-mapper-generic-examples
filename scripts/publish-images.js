@@ -19,7 +19,7 @@ const projects = JSON.parse(
 );
 
 for (const [_, project] of Object.entries(projects)) {
-  const projectDir = `pipelines/${project.name}`;
+  const projectDir = `flows/${project.name}`;
   if (fs.existsSync(path.join(projectDir, pipelineFilename))) {
     const image = `${registry}/${owner}/${project.name}:${project.version}`;
     console.log(
