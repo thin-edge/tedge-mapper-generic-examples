@@ -10,7 +10,7 @@ The flow is represented by the following steps:
 
 ### Input
 
-The pipeline expects the thin-edge.io service status message to be one of the following formats:
+The flow expects the thin-edge.io service status message to be one of the following formats:
 
 ## Using it
 

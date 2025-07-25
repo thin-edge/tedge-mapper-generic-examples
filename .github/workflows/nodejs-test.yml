@@ -28,9 +28,9 @@ jobs:
       - id: find-projects
         name: Find Node.js projects
         run: |
-          # Find all directories under `pipelines` that contain a package.json,
+          # Find all directories under `flows` that contain a package.json,
           # then format the list as a JSON array for the matrix strategy.
-          PROJECTS=$(find pipelines -name package.json -exec dirname {} \; | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          PROJECTS=$(find flows -name package.json -exec dirname {} \; | jq -R -s -c 'split("\n") | map(select(length > 0))')
           echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
 
   test:

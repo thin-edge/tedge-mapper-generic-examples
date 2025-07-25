@@ -1,6 +1,6 @@
 ## uptime
 
-This pipeline demonstrates how to use `tedge-mapper-generic` to monitor the uptime (as a percentage) of a service.
+This flow demonstrates how to use `tedge-mapper-generic` to monitor the uptime (as a percentage) of a service.
 
 ### Description
 
@@ -11,7 +11,7 @@ The flow is represented by the following steps:
 
 ### Input
 
-The pipeline expects the thin-edge.io service status message to be one of the following formats:
+The flow expects the thin-edge.io service status message to be one of the following formats:
 
 **JSON payload**
 
