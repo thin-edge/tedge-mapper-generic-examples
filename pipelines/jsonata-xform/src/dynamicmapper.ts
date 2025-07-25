@@ -1,6 +1,6 @@
 import { Message } from "../../common/tedge";
 import jsonata from "jsonata";
-import * as _ from "lodash";
+import { set, get, merge, unset, has } from "es-toolkit/compat";
 // https://nearform.com/insights/the-jsonata-performance-dilemma/
 
 export interface Substitution {
@@ -37,25 +37,25 @@ function applyModifiers(src: any, dst: any, paths: PropertyMapping[]): any {
     ...src,
   };
   paths.forEach((path) => {
-    const value = _.get(src, path.source);
+    const value = get(src, path.source);
     applyModifier(value, output, path);
   });
   return output;
 }
 
-function applyModifier(value: any, output: any, path: PropertyMapping): any {
+function applyModifier(value: object, output: any, path: PropertyMapping): any {
   if (path.mode == Mode.IfNotPresent) {
-    if (!_.has(output, path.destination)) {
-      _.set(output, path.destination, value);
+    if (!has(output, path.destination)) {
+      set(output, path.destination, value);
     }
   } else if (path.mode == Mode.IfDefined) {
-    if (!_.isUndefined(value)) {
-      _.set(output, path.destination, value);
+    if (typeof value !== "undefined") {
+      set(output, path.destination, value);
     }
   } else if (path.mode == Mode.Delete) {
-    _.unset(output, path.source);
+    unset(output, path.source);
   } else {
-    _.set(output, path.destination, value);
+    set(output, path.destination, value);
   }
   return output;
 }
@@ -106,7 +106,7 @@ export async function build(
   };
 
   mods.forEach((item) => {
-    output = _.merge(output, item);
+    output = merge(output, item);
   });
   return applyModifiers(output, {}, postModifiers);
 }

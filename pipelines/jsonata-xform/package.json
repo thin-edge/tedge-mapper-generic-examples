@@ -30,7 +30,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "jsonata": "^2.0.6",
-    "lodash": "^4.17.21"
+    "es-toolkit": "^1.39.8",
+    "jsonata": "^2.0.6"
   }
 }
