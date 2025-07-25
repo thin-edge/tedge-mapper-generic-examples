@@ -2,7 +2,7 @@ const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-const pipelineFilename = "pipeline.toml";
+const flowFilename = "pipeline.toml";
 const registry = process.env.REGISTRY || "ghcr.io";
 const owner = process.env.OWNER || "thin-edge";
 
@@ -20,13 +20,13 @@ const projects = JSON.parse(
 
 for (const [_, project] of Object.entries(projects)) {
   const projectDir = `flows/${project.name}`;
-  if (fs.existsSync(path.join(projectDir, pipelineFilename))) {
+  if (fs.existsSync(path.join(projectDir, flowFilename))) {
     const image = `${registry}/${owner}/${project.name}:${project.version}`;
     console.log(
-      `\nPublishing pipeline. project=${project.name}, version=${project.version}, module=${project.module}`,
+      `\nPublishing flow. project=${project.name}, version=${project.version}, module=${project.module}`,
     );
     execSync(
-      `tedge-oscar flows images push ${image} --file ${projectDir}/${project.module} --file ${projectDir}/${pipelineFilename} --root ${projectDir}`,
+      `tedge-oscar flows images push ${image} --file ${projectDir}/${project.module} --file ${projectDir}/${flowFilename} --root ${projectDir}`,
     );
   }
 }

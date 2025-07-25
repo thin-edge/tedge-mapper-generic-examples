@@ -1,10 +1,10 @@
 ## log-surge
 
-This pipeline demonstrates how to use `tedge-mapper-generic` to monitor system logs for surges in error messages and raise alarms accordingly.
+This flow demonstrates how to use `tedge-mapper-generic` to monitor system logs for surges in error messages and raise alarms accordingly.
 
 ### Description
 
-The pipeline uses a single filter to do the message normalization, filtering and aggregation.
+The flow uses a single filter to do the message normalization, filtering and aggregation.
 
 The flow is represented by the following steps:
 
@@ -15,7 +15,7 @@ The flow is represented by the following steps:
 
 ### Input
 
-The pipeline can be fed from data journald in JSON format (e.g. published via MQTT, or in the future by just executing a command).
+The flow can be fed from data journald in JSON format (e.g. published via MQTT, or in the future by just executing a command).
 
 ```sh
 journalctl -o json -b ----cursor-file=./tmp.cursor --no-pager -n 100
@@ -23,7 +23,7 @@ journalctl -o json -b ----cursor-file=./tmp.cursor --no-pager -n 100
 
 ### Improvements
 
-- Allow the pipeline to receive input from a command's standard output rather than over MQTT. The command could then be executed periodically by the mapper, and the output.
+- Allow the flow to receive input from a command's standard output rather than over MQTT. The command could then be executed periodically by the mapper, and the output.
 
 ## Using it
 
