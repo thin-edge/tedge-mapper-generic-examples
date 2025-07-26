@@ -1,4 +1,5 @@
-input_topics = [
+[input]
+mqtt.topics = [
     "te/device/main///m/multiple_values",
 ]
 

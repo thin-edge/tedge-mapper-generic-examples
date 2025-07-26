@@ -1,4 +1,5 @@
-input_topics = ["te/device/main///logs/journald"]
+[input]
+mqtt.topics = ["te/device/main///logs/journald"]
 
 [[steps]]
 script = "dist/main.mjs"

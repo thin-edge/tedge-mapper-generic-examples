@@ -1,4 +1,5 @@
-input_topics = [
+[input]
+mqtt.topics = [
     "te/device/main/service/mosquitto-c8y-bridge/status/health",
     "te/device/main/service/tedge-mapper-bridge-c8y/status/health",
 ]
