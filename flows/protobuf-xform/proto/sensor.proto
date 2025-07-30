@@ -1,0 +1,7 @@
+package sensorpackage;
+syntax = "proto3";
+
+message SensorMessage {
+    double temperature = 1 [default = 0];
+    double humidity = 2 [default = 0];
+}

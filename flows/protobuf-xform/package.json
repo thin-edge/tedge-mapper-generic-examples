@@ -1,7 +1,7 @@
 {
-  "name": "jsonata-xform",
-  "version": "0.0.2",
-  "description": "This flow demonstrates to use jsonata for message transformation.",
+  "name": "protobuf-xform",
+  "version": "1.1.2",
+  "description": "This flow demonstrates how to transform json messages into protobuf messages to reduce message size",
   "source": "src/main.ts",
   "module": "dist/main.mjs",
   "type": "module",
@@ -14,6 +14,7 @@
     "start:nodejs": "node dist/main.test.mjs test",
     "start:deno": "deno dist/main.test.mjs test",
     "start:tedge": "cat data/input.journald.jsonl | cargo +1.82 run -- mapping test --mapping-dir './' --final-tick",
+    "build:proto": "node ./scripts/build.mjs",
     "test": "jest --coverageProvider=v8 --coverage"
   },
   "author": "thin-edge.io",
@@ -21,7 +22,6 @@
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
     "@types/jest": "^30.0.0",
-    "@types/lodash": "^4.17.20",
     "esbuild": "^0.25.5",
     "esbuild-register": "^3.6.0",
     "jest": "^30.0.4",
@@ -29,9 +29,5 @@
     "prettier": "3.6.2",
     "protobufjs-cli": "^1.1.3",
     "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "es-toolkit": "^1.39.8",
-    "jsonata": "^2.0.6"
   }
 }
