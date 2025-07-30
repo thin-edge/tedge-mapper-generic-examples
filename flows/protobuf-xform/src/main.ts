@@ -8,7 +8,7 @@ import * as messages from "./sensor";
 export interface Config {}
 
 export function decodeBase64(data) {
-  return Uint8Array.from(atob(data), c => c.charCodeAt(0))
+  return Uint8Array.from(atob(data), (c) => c.charCodeAt(0));
 }
 
 export function onMessage(message: Message, config: Config): Message[] {
@@ -18,12 +18,14 @@ export function onMessage(message: Message, config: Config): Message[] {
     temperature: payload.temperature,
     humidity: payload.humidity,
   });
-  
+
   const out = messages.sensorpackage.SensorMessage.encode(sensor).finish();
   var base64String = btoa(String.fromCharCode.apply(null, new Uint8Array(out)));
-  return [{
-    timestamp: message.timestamp,
-    topic: message.topic + "/proto",
-    payload: base64String,
-  }];
+  return [
+    {
+      timestamp: message.timestamp,
+      topic: message.topic + "/proto",
+      payload: base64String,
+    },
+  ];
 }
