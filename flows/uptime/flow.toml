@@ -6,7 +6,7 @@ mqtt.topics = [
 
 [[steps]]
 script = "dist/main.mjs"
-tick_every_seconds = 10
+interval = "10s"
 config.window_size_minutes = 1440
 config.stats_topic = "twin/onlineTracker"
 config.default_status = "uninitialized"

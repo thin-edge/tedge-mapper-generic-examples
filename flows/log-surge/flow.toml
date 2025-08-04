@@ -3,7 +3,7 @@ mqtt.topics = ["te/device/main///logs/journald"]
 
 [[steps]]
 script = "dist/main.mjs"
-tick_every_seconds = 1
+interval = "1s"
 
 config.with_logs = true
 config.debug = false
