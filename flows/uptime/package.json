@@ -13,7 +13,7 @@
     "start:quickjs": "qjs dist/main.test.mjs test",
     "start:nodejs": "node dist/main.test.mjs test",
     "start:deno": "deno dist/main.test.mjs test",
-    "start:tedge": "cat data/input.journald.jsonl | cargo +1.82 run -- mapping test --mapping-dir './' --final-tick",
+    "start:tedge": "cat data/input.journald.jsonl | cargo +1.82 run -- flows test --flows-dir './' --final-on-interval",
     "test": "jest --coverageProvider=v8 --coverage"
   },
   "author": "thin-edge.io",
