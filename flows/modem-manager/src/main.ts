@@ -4,8 +4,7 @@
 import { Message } from "../../common/tedge";
 
 export interface Config {
-  window_size_minutes?: number;
-  stats_topic?: string;
+  interval_sec?: number;
 }
 
 export interface Mobile {
@@ -28,6 +27,10 @@ export interface State {
 const state: State = {
   mobile: {},
 };
+
+function hasChanged(obj1, obj2): boolean {
+  return JSON.stringify(obj1) !== JSON.stringify(obj2);
+}
 
 export function onMessage(message: Message, config: Config): Message[] {
   const payload = JSON.parse(message.payload);
@@ -82,17 +85,20 @@ export function onMessage(message: Message, config: Config): Message[] {
     }
   }
 
-  if (Object.keys(mobile).length > 0) {
+  if (hasChanged(mobile, state.mobile)) {
     output.push({
       topic: "te/device/main///twin/c8y_Mobile",
       retain: true,
-      payload: JSON.stringify(mobile),
+      payload: JSON.stringify({
+        ...mobile,
+        lastChanged: new Date(message.timestamp.seconds * 1000).toISOString(),
+      }),
       timestamp: message.timestamp,
     });
   }
 
-  // on change detection
-  if (!!state.mobile.cellId && state.mobile.cellId != mobile.cellId) {
+  // cell tower change detection
+  if (!!state.mobile.cellId && state.mobile.cellId !== mobile.cellId) {
     output.push({
       topic: "te/device/main///e/cellTowerDetails",
       payload: JSON.stringify({
