@@ -1,8 +1,9 @@
 #!/bin/sh
 set -e
 SIMULATE=${SIMULATE:-0}
-INTERVAL=${INTERVAL:-0}
-TOPIC=${TOPIC:-}
+INTERVAL=${INTERVAL:-60}
+OUTPUT=${OUTPUT:-mqtt}
+TOPIC=${TOPIC:-"te/device/main///source/modemManager"}
 
 dir=$(CDPATH="" cd -- "$(dirname -- "$0")" && pwd)
 
@@ -25,12 +26,15 @@ collect() {
         LOCATION=$($SUDO mmcli --modem any --location-get -J || echo '{}')
     fi
 
-    if [ -z "$TOPIC" ]; then
-        echo "$SIM" "$LOCATION" "$MODEM" | jq -s '.[0] * .[1] * .[2]'
-    else
-        PAYLOAD=$(echo "$SIM" "$LOCATION" "$MODEM" | jq -s '.[0] * .[1] * .[2]')
-        tedge mqtt pub "$TOPIC" "$PAYLOAD"
-    fi
+    case "$OUTPUT" in
+        stdout)
+            echo "$SIM" "$LOCATION" "$MODEM" | jq -s '.[0] * .[1] * .[2]'
+            ;;
+        mqtt)
+            PAYLOAD=$(echo "$SIM" "$LOCATION" "$MODEM" | jq -s '.[0] * .[1] * .[2]')
+            tedge mqtt pub "$TOPIC" "$PAYLOAD"
+            ;;
+    esac
 }
 
 usage() {
@@ -40,14 +44,18 @@ Get modem information from modem manager
 $0 [--interval <sec>] [--topic <topic>]
 
 ARGUMENTS
-  --interval <sec>       Collect the modem information every x seconds
-  --topic <topic>        MQTT Topic to publish the modem information to
+  --interval <sec>          Collect the modem information every x seconds
+                            Default: 60
+  --topic <topic>           MQTT Topic to publish the modem information to.
+                            Default: te/device/main///source/modemManager
+  --output <stdout|mqtt>    Where to output the messages to.
+                            Default: mqtt
 
 EXAMPLES
-  $0 --interval 60 --topic te/device/main///source/modemManager
+  $0 --interval 60 --topic te/device/main///source/modemManager --output mqtt
   Publish modem information every 60 seconds to the te/device/main///source/modemManager topic
 
-  $0
+  $0 --output stdout --interval 0
   Get modem information once and print out to stdout
 EOT
 }
@@ -56,6 +64,10 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --interval)
             INTERVAL="$2"
+            shift
+            ;;
+        --output)
+            OUTPUT="$2"
             shift
             ;;
         --topic)
