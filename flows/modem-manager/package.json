@@ -6,7 +6,8 @@
   "module": "dist/main.mjs",
   "type": "module",
   "scripts": {
-    "build": "esbuild src/main.ts --target=es2018 --bundle --outfile=dist/main.mjs --format=esm --drop-labels=DEV,TEST"
+    "build": "esbuild src/main.ts --target=es2018 --bundle --outfile=dist/main.mjs --format=esm --drop-labels=DEV,TEST",
+    "test": "jest --coverageProvider=v8 --coverage"
   },
   "author": "thin-edge.io",
   "license": "Apache-2.0",
