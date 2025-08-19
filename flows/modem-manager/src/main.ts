@@ -1,5 +1,5 @@
 /*
-  Calculate the 
+  Publish modem information
 */
 import { Message } from "../../common/tedge";
 
