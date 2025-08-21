@@ -7,10 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  discover-projects:
+  test:
     runs-on: ubuntu-latest
-    outputs:
-      projects: ${{ steps.find-projects.outputs.projects }}
     steps:
       - uses: actions/checkout@v4
 
@@ -25,28 +23,22 @@ jobs:
       - name: Check formatting
         run: npm run format:check
 
-      - id: find-projects
-        name: Find Node.js projects
-        run: |
-          # Find all directories under `flows` that contain a package.json,
-          # then format the list as a JSON array for the matrix strategy.
-          PROJECTS=$(find flows -name package.json -exec dirname {} \; | jq -R -s -c 'split("\n") | map(select(length > 0))')
-          echo "projects=$PROJECTS" >> $GITHUB_OUTPUT
+      - name: Build
+        run: npm run build-all
 
-  test:
-    needs: discover-projects
+      - name: Run tests
+        run: npm test
+
+  publish:
+    needs: test
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: read
       packages: write
     env:
       REGISTRY: ghcr.io
       OWNER: ${{ github.repository_owner }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        project: ${{ fromJson(needs.discover-projects.outputs.projects) }}
 
     steps:
       - name: Checkout repository
@@ -61,40 +53,23 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        working-directory: ${{ matrix.project }}
 
-      - name: Build
-        run: npm run build
-        working-directory: ${{ matrix.project }}
-
-      - name: Run tests
-        run: npm test
-        working-directory: ${{ matrix.project }}
+      - name: Install dependencies
+        run: npm run build-all
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
-        if: github.ref == 'refs/heads/main'
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ env.OWNER }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-go@v5
-        if: github.ref == 'refs/heads/main'
         with:
           go-version: "stable"
           cache: false
       - name: Install tedge-oscar
         run: go install github.com/reubenmiller/tedge-oscar@latest
-        if: github.ref == 'refs/heads/main'
 
       - name: Publish
-        if: github.ref == 'refs/heads/main'
-        run: npm run publish -- ${{ matrix.project }}
-
-  test-summary:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Report overall status
-        run: echo "All project tests passed successfully."
+        run: npm run publish
