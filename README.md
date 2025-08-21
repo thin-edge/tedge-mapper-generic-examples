@@ -1,3 +1,3 @@
-# tedge-mapper-generic-examples
+# tedge-flows-examples
 
-Experimental repository to exchange examples which use the upcoming generic tedge-mapper feature.
+Experimental repository to exchange examples which use the upcoming tedge-flows feature.

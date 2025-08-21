@@ -1,6 +1,6 @@
 ## log-surge
 
-This flow demonstrates how to use `tedge-mapper-generic` to monitor system logs for surges in error messages and raise alarms accordingly.
+This flow demonstrates how to use `tedge-flows` to monitor system logs for surges in error messages and raise alarms accordingly.
 
 ### Description
 

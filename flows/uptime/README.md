@@ -1,6 +1,6 @@
 ## uptime
 
-This flow demonstrates how to use `tedge-mapper-generic` to monitor the uptime (as a percentage) of a service.
+This flow demonstrates how to use `tedge-flows` to monitor the uptime (as a percentage) of a service.
 
 ### Description
 
@@ -23,50 +23,4 @@ The flow expects the thin-edge.io service status message to be one of the follow
 
 ```
 1 or 0
-```
-
-## Using it
-
-### Install dependencies
-
-```sh
-npm install
-```
-
-### Run tests
-
-```sh
-npm run test
-```
-
-### Create package
-
-Build the package and pull in all the dependencies and transpile the JavaScript down to the targer version (e.g. `ES2018`)
-
-```sh
-npm run build
-```
-
-The output package (which is a standalone JavaScript file) is under `./dist/main.mjs`.
-
-### Run test package
-
-First build the test variant of the package (which includes an entrypoint to start the script)
-
-```sh
-npm run build:test
-npm run start:quickjs
-npm run start:nodejs
-```
-
-Then run the build package under different JavaScript engines (you'll have to install the dependencies yourself).
-
-```sh
-npm run start:nodejs
-
-# using quickjs runtime
-npm run start:quickjs
-
-# using wasm based quickjs version
-npm run start:wasm-quickjs
 ```

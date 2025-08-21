@@ -1,7 +1,7 @@
 {
-  "name": "tedge-mapper-generic-workspace",
+  "name": "tedge-flows-workspace",
   "version": "1.0.0",
-  "description": "Experimental repository to exchange examples which use the upcoming generic tedge-mapper feature",
+  "description": "Experimental repository to exchange examples which use the upcoming tedge-flows feature",
   "main": "index.js",
   "private": true,
   "scripts": {
